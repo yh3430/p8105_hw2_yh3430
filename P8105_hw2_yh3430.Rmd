@@ -1,0 +1,54 @@
+---
+title: "P8150 homework 2"
+author: Yu He
+Date: 10/6/2021
+output: github_document
+---
+
+## homework 2 Problem 1
+initla package
+
+```{r, echo = FALSE, message=FALSE}
+library(tidyverse)
+library(readxl)
+library(haven)
+```
+
+import and manipulate Mr. Trash Wheel data
+
+```{r}
+Mtw_df <- read_excel("Trash_Wheel_Collection.xlsx", sheet = 1, range = "A2:N408") %>% 
+  janitor::clean_names() %>% 
+  filter(!(month %in% c("January Total", "February Total", "March Total", "April Total", "May Total", "June Total", "July Total", "August Total", "September Total", "October Total", "November  Total", "December Total", "Grand Total"))) %>% 
+  mutate(sports_balls = round(sports_balls))
+  
+```
+
+import and manipulate Mr. Trash Wheel precipitation data for 2018 and 2019
+
+```{r}
+Twp2019_df <- read_excel("Trash_Wheel_Collection.xlsx", sheet = "2019 Precipitation", range = "A2:B14") %>% 
+  janitor::clean_names() %>% 
+  mutate(year = 2019)
+  
+
+Twp2018_df <- read_excel("Trash_Wheel_Collection.xlsx", sheet = "2018 Precipitation",  range = "A2:B14") %>% 
+  janitor::clean_names() %>% 
+  mutate(year = 2018)
+
+Twp_df <- left_join(Twp2019_df, Twp2018_df, by = "month") %>% 
+  mutate(month = month.name)
+  
+```
+
+what was the total precipitation in 2018? 
+It is `r sum(pull(Twp_df, total.x))`
+
+What was the median number of sports balls in a dumpster in 2019?
+It is `r sum(pull(Twp_df, total.y))`
+
+
+
+
+
+
