@@ -36,8 +36,8 @@ Twp2018_df <- read_excel("Trash_Wheel_Collection.xlsx", sheet = "2018 Precipitat
   janitor::clean_names() %>% 
   mutate(year = 2018)
 
-Twp_df <- left_join(Twp2019_df, Twp2018_df, by = "month") %>% 
-  mutate(month = month.name)
+Twp_df <- bind_rows(Twp2019_df, Twp2018_df) %>% 
+  mutate(month = month.name[as.numeric(month)])
   
 ```
 
@@ -45,21 +45,68 @@ The Trash_Wheel_Collection data set include information collected from May, 2014
 
 The average weight of trash collected each month is `r mean(pull(Mtw_df, weight_tons))`, and the average volume of trash collected each month is `r mean(pull(Mtw_df, volume_cubic_yards))`. In addition, the cigarette butts has the highest amount. which is `r sum(pull(Mtw_df, cigarette_butts))`.
 
-The max precipitation of 2018 happened in October, which is `r max(pull(Twp_df, total.x))`. And the max precipitation of 2019 happened in September, which is `r max(pull(Twp_df, total.y))`. The total precipitation in 2018 is `r sum(pull(Twp_df, total.x))`. And the median number of sports balls in a dumpster in 2019 is`r median(pull(filter(Mtw_df, year == 2019), sports_balls))`.
+The max precipitation happened in September, 2019, which is `r max(pull(Twp_df, total))`. The total precipitation in 2018 is `r sum(pull(filter(Twp_df, year == 2018), total))`. And the median number of sports balls in a dumpster in 2019 is`r median(pull(filter(Mtw_df, year == 2019), sports_balls))`.
 
 ## homework 2 Problem 2
 
+Part 1 clean the data in pols-month. 
 ```{r}
 pols_month <- read_csv("fivethirtyeight_datasets/pols-month.csv") %>% 
   janitor::clean_names() %>% 
   separate(mon, c("year", "month", "day")) %>% 
-  mutate(month = month.name[as.numeric(month)])
+  mutate(month = month.name[as.numeric(month)]) %>% 
+  mutate(president = prez_gop - prez_dem) %>% 
+  mutate(president = recode(president, "1" = "gop", "2" = "gop", "-1" = "dem")) %>% 
+  select(-prez_dem) %>% 
+  select(-prez_gop) %>% 
+  select(-day)
 ```
 
 
+Part 2 clean the data in snp.csv
+
+```{r}
+snp_df = read_csv("fivethirtyeight_datasets/snp.csv") %>% 
+  janitor::clean_names() %>% 
+  
+  lubridate::mdy(date) %>% 
+  
+  separate(date, c("year", "month", "day")) %>% 
+  mutate(month = month.name[as.numeric(month)])
+  
+```
+
+Part 3 tidy the unemployment data with pols and snp data
+
+```{r}
+unemployment_df = read_csv("fivethirtyeight_datasets/unemployment.csv") %>% 
+  janitor::clean_names() %>% 
+  left_join(snp_df, pols_month) %>% 
+  
+```
+ 
+Add description:
 
 
 
+
+## homework 2 problem 3
+Part 1 load and tidy the data
+
+```{r}
+pb_names = read_csv("Popular_Baby_Names.csv") %>% 
+  janitor::clean_names() %>% 
+  mutate(childs_first_name = tolower(childs_first_name)) %>% 
+  distinct() %>% 
+
+```
+
+Part produce table for Baby's name Oliva
+
+```{r}
+filter(pb_names, childs_first_name == "olivia") %>% 
+  select(-)
+```
 
 
 
