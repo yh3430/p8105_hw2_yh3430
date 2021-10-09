@@ -41,11 +41,47 @@ Twp_df <- left_join(Twp2019_df, Twp2018_df, by = "month") %>%
   
 ```
 
-what was the total precipitation in 2018? 
-It is `r sum(pull(Twp_df, total.x))`
+The Trash_Wheel_Collection data set include information collected from May, 2014 to January, 2021. It provides information about variables includes `r names(Mtw_df)`.
 
-What was the median number of sports balls in a dumpster in 2019?
-It is `r sum(pull(Twp_df, total.y))`
+The average weight of trash collected each month is `r mean(pull(Mtw_df, weight_tons))`, and the average volume of trash collected each month is `r mean(pull(Mtw_df, volume_cubic_yards))`. In addition, the cigarette butts has the highest amount. which is `r sum(pull(Mtw_df, cigarette_butts))`.
+
+The max precipitation of 2018 happened in October, which is `r max(pull(Twp_df, total.x))`. And the max precipitation of 2019 happened in September, which is `r max(pull(Twp_df, total.y))`. The total precipitation in 2018 is `r sum(pull(Twp_df, total.x))`. And the median number of sports balls in a dumpster in 2019 is`r median(pull(filter(Mtw_df, year == 2019), sports_balls))`.
+
+## homework 2 Problem 2
+
+```{r}
+pols_month <- read_csv("fivethirtyeight_datasets/pols-month.csv") %>% 
+  janitor::clean_names() %>% 
+  separate(mon, c("year", "month", "day")) %>% 
+  mutate(month = month.name[as.numeric(month)])
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
