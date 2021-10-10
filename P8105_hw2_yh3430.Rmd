@@ -17,7 +17,7 @@ library(haven)
 import and manipulate Mr. Trash Wheel data
 
 ```{r}
-Mtw_df <- read_excel("Trash_Wheel_Collection.xlsx", sheet = 1, range = "A2:N408") %>% 
+Mtw_df <- read_excel("hw2_data/Trash_Wheel_Collection.xlsx", sheet = 1, range = "A2:N408") %>% 
   janitor::clean_names() %>% 
   filter(!(month %in% c("January Total", "February Total", "March Total", "April Total", "May Total", "June Total", "July Total", "August Total", "September Total", "October Total", "November  Total", "December Total", "Grand Total"))) %>% 
   mutate(sports_balls = round(sports_balls))
@@ -27,12 +27,12 @@ Mtw_df <- read_excel("Trash_Wheel_Collection.xlsx", sheet = 1, range = "A2:N408"
 import and manipulate Mr. Trash Wheel precipitation data for 2018 and 2019
 
 ```{r}
-Twp2019_df <- read_excel("Trash_Wheel_Collection.xlsx", sheet = "2019 Precipitation", range = "A2:B14") %>% 
+Twp2019_df <- read_excel("hw2_data/Trash_Wheel_Collection.xlsx", sheet = "2019 Precipitation", range = "A2:B14") %>% 
   janitor::clean_names() %>% 
   mutate(year = 2019)
   
 
-Twp2018_df <- read_excel("Trash_Wheel_Collection.xlsx", sheet = "2018 Precipitation",  range = "A2:B14") %>% 
+Twp2018_df <- read_excel("hw2_data/Trash_Wheel_Collection.xlsx", sheet = "2018 Precipitation",  range = "A2:B14") %>% 
   janitor::clean_names() %>% 
   mutate(year = 2018)
 
@@ -51,7 +51,7 @@ The max precipitation happened in September, 2019, which is `r max(pull(Twp_df, 
 
 Part 1 clean the data in pols-month. 
 ```{r}
-pols_month <- read_csv("fivethirtyeight_datasets/pols-month.csv") %>% 
+pols_month <- read_csv("hw2_data/pols-month.csv") %>% 
   janitor::clean_names() %>% 
   separate(mon, c("year", "month", "day")) %>% 
   mutate(month = month.name[as.numeric(month)]) %>% 
@@ -66,14 +66,13 @@ pols_month <- read_csv("fivethirtyeight_datasets/pols-month.csv") %>%
 Part 2 clean the data in snp.csv
 
 ```{r}
-snp_df = read_csv("fivethirtyeight_datasets/snp.csv") %>% 
+snp_df = read_csv("hw2_data/snp.csv") %>% 
   janitor::clean_names() %>% 
   
   
   
   
-
-  
+  lubridate::mdy(date)
   
   
   
@@ -86,16 +85,21 @@ snp_df = read_csv("fivethirtyeight_datasets/snp.csv") %>%
 Part 3 tidy the unemployment data with pols and snp data
 
 ```{r}
-unemployment_df = read_csv("fivethirtyeight_datasets/unemployment.csv") %>% 
-  janitor::clean_names() 
-  
-  
-  
-  
-  
+unemployment_df = read_csv("hw2_data/unemployment.csv") %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(-year, names_to = "month", values_to = "percentage of unemployment" ) %>%   
+  mutate()
  
 ```
- 
+
+Part 4 merge all three tables
+
+```{r}
+fte_df = left_join(snp_df, pols_month) %>% 
+  left_join(unemployment_df)
+  
+```
+
 Add description:
 
 
@@ -105,7 +109,7 @@ Add description:
 Part 1 load and tidy the data
 
 ```{r}
-pb_names = read_csv("Popular_Baby_Names.csv") %>% 
+pb_names = read_csv("hw2_data/Popular_Baby_Names.csv") %>% 
   janitor::clean_names() %>% 
   mutate(ethnicity = recode(ethnicity, "WHITE NON HISP" = "WHITE NON HISPANIC", "BLACK NON HISP" = "BLACK NON HISPANIC", "ASIAN AND PACI" = "ASIAN AND PACIFIC ISLANDER")) %>% 
   mutate(childs_first_name = tolower(childs_first_name)) %>% 
@@ -117,16 +121,16 @@ Part 2(a) produce table for Baby's name Oliva
 
 ```{r}
 filter(pb_names, childs_first_name == "olivia") %>%
-  
-  pivot_wider(names_from = year_of_birth, values_from = ethnicity)
+  pivot_wider(names_from = year_of_birth, values_from = childs_first_name) %>% 
+  knitr::kable()
 ```
 
 Part 2(b) produce table for male children
 
 ```{r}
 filter(pb_names, gender == "MALE") %>% 
-  
-  pivot_wider(names_from = year_of_birth, values_from = ethnicity)
+  pivot_wider(names_from = year_of_birth, values_from = count) %>% 
+  knitr::kable()
 ```
 
 Part 3 produce a scatter plot for male
