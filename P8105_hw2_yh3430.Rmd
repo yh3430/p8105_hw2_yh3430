@@ -12,6 +12,7 @@ initla package
 library(tidyverse)
 library(readxl)
 library(haven)
+library(lubridate)
 ```
 
 import and manipulate Mr. Trash Wheel data
@@ -68,9 +69,7 @@ Part 2 clean the data in snp.csv
 ```{r}
 snp_df = read_csv("hw2_data/snp.csv") %>% 
   janitor::clean_names() %>% 
-
-  lubridate::mdy(date)
-  
+  mutate(date = mdy(date)) %>% 
   separate(date, c("year", "month", "day")) %>% 
   mutate(month = month.name[as.numeric(month)])
   
@@ -89,8 +88,7 @@ unemployment_df = read_csv("hw2_data/unemployment.csv") %>%
 Part 4 merge all three tables
 
 ```{r}
-fte_df = left_join(snp_df, pols_month) %>% 
-  left_join(unemployment_df)
+fte_df = left_join(snp_df, pols_month)
 ```
 
 Add description:
@@ -114,16 +112,16 @@ Part 2(a) produce table for Baby's name Oliva
 
 ```{r}
 filter(pb_names, childs_first_name == "olivia") %>%
-  pivot_wider(names_from = year_of_birth, values_from = childs_first_name) %>% 
-  knitr::kable()
+  pivot_wider(names_from = year_of_birth, values_from = childs_first_name)
+ 
 ```
 
 Part 2(b) produce table for male children
 
 ```{r}
 filter(pb_names, gender == "MALE") %>% 
-  pivot_wider(names_from = year_of_birth, values_from = count) %>% 
-  knitr::kable()
+  pivot_wider(names_from = year_of_birth, values_from = count) 
+  
 ```
 
 Part 3 produce a scatter plot for male
