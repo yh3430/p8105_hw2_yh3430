@@ -69,6 +69,7 @@ Part 2 clean the data in snp.csv
 snp_df = read_csv("hw2_data/snp.csv") %>% 
   janitor::clean_names() %>% 
 
+  lubridate::mdy(date)
   
   separate(date, c("year", "month", "day")) %>% 
   mutate(month = month.name[as.numeric(month)])
@@ -88,7 +89,8 @@ unemployment_df = read_csv("hw2_data/unemployment.csv") %>%
 Part 4 merge all three tables
 
 ```{r}
-fte_df = left_join(snp_df, pols_month) 
+fte_df = left_join(snp_df, pols_month) %>% 
+  left_join(unemployment_df)
 ```
 
 Add description:
